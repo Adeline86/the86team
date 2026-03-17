@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The 86 Team</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --ardoise:#6B8FB5;
+      --ardoise-dark:#4A6B8A;
+      --ardoise-light:#8AAFD0;
+      --ardoise-pale:#B8CCE0;
+      --creme:#F5F0E8;
+      --parchemin:#E8DFC8;
+      --brun:#3D2B1F;
+      --brun-light:#6B4F3A;
+      --blanc-use:#F0EBE0;
+      --gris-bleu:#D0DCE8;
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'DM Sans',sans-serif;background:var(--creme);color:var(--brun);overflow-x:hidden}
+
+    /* Texture grain de fond */
+    body::before{
+      content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity:.4;
+    }
+
+    /* NAV */
+    nav{
+      position:fixed;top:0;left:0;right:0;z-index:100;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:1rem 2.5rem;
+      background:rgba(74,107,138,.96);
+      backdrop-filter:blur(8px);
+      border-bottom:2px solid rgba(255,255,255,.12);
+    }
+    .nav-logo{
+      display:flex;align-items:center;gap:.7rem;
+      text-decoration:none;
+    }
+    /* Hexagone logo miniature */
+    .nav-hex{
+      width:36px;height:36px;
+      background:var(--ardoise-light);
+      clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+      display:flex;align-items:center;justify-content:center;
+      border:1px solid rgba(255,255,255,.2);
+    }
+    .nav-hex span{
+      font-family:'Oswald',sans-serif;font-size:.55rem;font-weight:700;
+      color:#fff;letter-spacing:.05em;text-align:center;line-height:1.1;
+    }
+    .nav-brand{
+      font-family:'Oswald',sans-serif;font-size:1.1rem;font-weight:600;
+      letter-spacing:.15em;text-transform:uppercase;color:#fff;
+    }
+    .nav-links{display:flex;gap:2rem;list-style:none}
+    .nav-links a{
+      text-decoration:none;font-size:.72rem;font-weight:500;
+      letter-spacing:.18em;text-transform:uppercase;
+      color:rgba(255,255,255,.6);transition:color .2s;
+      border-bottom:1.5px solid transparent;padding-bottom:2px;
+    }
+    .nav-links a:hover,.nav-links a.active{color:#fff;border-bottom-color:rgba(255,255,255,.4)}
+
+    /* HERO */
+    .hero{
+      min-height:100vh;
+      background:var(--ardoise-dark);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      position:relative;overflow:hidden;text-align:center;padding:6rem 2rem 4rem;
+    }
+
+    /* Motif hexagones fond */
+    .hero-pattern{
+      position:absolute;inset:0;opacity:.06;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='96'%3E%3Cpolygon points='42,2 82,22 82,74 42,94 2,74 2,22' fill='none' stroke='white' stroke-width='1'/%3E%3C/svg%3E");
+      background-size:84px 96px;
+    }
+
+    /* Cercles concentriques décoratifs */
+    .hero-rings{
+      position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+      width:700px;height:700px;pointer-events:none;
+    }
+    .hero-rings circle{fill:none;stroke:rgba(255,255,255,.04)}
+
+    .hero-badge{
+      position:relative;
+      width:clamp(240px,45vw,380px);
+      margin-bottom:2.5rem;
+      opacity:0;animation:fadeIn .8s .3s forwards;
+    }
+    .hero-badge svg{width:100%;height:auto;filter:drop-shadow(0 8px 32px rgba(0,0,0,.3))}
+
+    .hero-tagline{
+      font-family:'Lora',serif;font-style:italic;
+      font-size:clamp(.95rem,2.2vw,1.25rem);
+      color:rgba(255,255,255,.7);
+      max-width:520px;line-height:1.9;
+      opacity:0;animation:fadeIn .8s .7s forwards;
+    }
+    .hero-tagline em{color:var(--ardoise-pale);font-style:normal}
+
+    .hero-cta{
+      margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;
+      opacity:0;animation:fadeIn .8s .9s forwards;
+    }
+    .btn{
+      display:inline-flex;align-items:center;gap:.5rem;
+      padding:.85rem 1.8rem;
+      font-family:'Oswald',sans-serif;font-size:.85rem;font-weight:600;
+      letter-spacing:.2em;text-transform:uppercase;text-decoration:none;
+      transition:transform .2s,box-shadow .2s;
+    }
+    .btn:hover{transform:translateY(-2px)}
+    .btn-primary{
+      background:var(--blanc-use);color:var(--ardoise-dark);
+      border:2px solid var(--ardoise-pale);
+      clip-path:polygon(8px 0%,calc(100% - 8px) 0%,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0% calc(100% - 8px),0% 8px);
+    }
+    .btn-primary:hover{box-shadow:0 6px 20px rgba(0,0,0,.25)}
+    .btn-outline{
+      background:transparent;color:rgba(255,255,255,.8);
+      border:1.5px solid rgba(255,255,255,.25);border-radius:2px;
+    }
+    .btn-outline:hover{border-color:rgba(255,255,255,.6);color:#fff}
+
+    .hero-scroll{
+      position:absolute;bottom:2rem;
+      display:flex;flex-direction:column;align-items:center;gap:.4rem;
+      color:rgba(255,255,255,.3);font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;
+      opacity:0;animation:fadeIn .8s 1.2s forwards;
+    }
+    .scroll-line{width:1px;height:36px;background:linear-gradient(to bottom,rgba(255,255,255,.4),transparent);animation:scrollPulse 1.8s ease-in-out infinite}
+    @keyframes scrollPulse{0%,100%{opacity:1}50%{opacity:.2}}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+    /* SÉPARATEUR VINTAGE */
+    .vintage-divider{
+      text-align:center;padding:2.5rem 1rem;background:var(--parchemin);
+      border-top:1px solid rgba(74,107,138,.15);border-bottom:1px solid rgba(74,107,138,.15);
+    }
+    .vintage-divider svg{opacity:.3;width:280px;height:auto}
+
+    /* CITATION */
+    .quote-section{
+      background:var(--ardoise);padding:5rem 2rem;text-align:center;
+      position:relative;overflow:hidden;
+    }
+    .quote-section::before{
+      content:'"';
+      position:absolute;top:-2rem;left:50%;transform:translateX(-50%);
+      font-family:'Lora',serif;font-size:20rem;color:rgba(255,255,255,.04);
+      line-height:1;pointer-events:none;
+    }
+    .quote-text{
+      font-family:'Lora',serif;font-style:italic;
+      font-size:clamp(1.1rem,2.8vw,1.7rem);color:var(--blanc-use);
+      max-width:660px;margin:0 auto;line-height:1.8;position:relative;
+    }
+    .quote-text em{color:var(--ardoise-pale);font-style:normal;font-weight:600}
+    .quote-author{
+      margin-top:1.5rem;font-family:'Oswald',sans-serif;
+      font-size:.72rem;font-weight:400;letter-spacing:.35em;
+      text-transform:uppercase;color:rgba(255,255,255,.4);
+    }
+    /* badges côtés */
+    .quote-badges{
+      display:flex;justify-content:center;align-items:center;gap:2rem;margin-bottom:2rem;
+    }
+    .q-badge{
+      width:44px;height:44px;
+      clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.2);
+    }
+    .q-line{width:80px;height:1px;background:rgba(255,255,255,.2)}
+
+    /* VOYAGES */
+    .voyages-section{padding:6rem 2rem;max-width:1080px;margin:0 auto}
+    .section-eyebrow{
+      font-family:'Oswald',sans-serif;font-size:.7rem;font-weight:400;
+      letter-spacing:.35em;text-transform:uppercase;color:var(--ardoise);
+      margin-bottom:.6rem;display:flex;align-items:center;gap:.8rem;
+    }
+    .section-eyebrow::before,.section-eyebrow::after{content:'';flex:1;height:1px;background:var(--ardoise);opacity:.3;max-width:40px}
+    .section-title{
+      font-family:'Oswald',sans-serif;font-size:clamp(2.2rem,6vw,4.5rem);
+      font-weight:700;color:var(--ardoise-dark);line-height:1;
+      letter-spacing:.05em;text-transform:uppercase;margin-bottom:3rem;
+    }
+
+    .voyages-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem}
+    .voyage-card{
+      border-radius:4px;overflow:hidden;
+      background:#fff;
+      box-shadow:0 4px 20px rgba(74,107,138,.12);
+      text-decoration:none;color:var(--brun);
+      transition:transform .25s,box-shadow .25s;
+      border:1px solid rgba(74,107,138,.12);
+      position:relative;
+    }
+    .voyage-card:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(74,107,138,.2)}
+    /* Coin décoratif */
+    .voyage-card::before,.voyage-card::after{
+      content:'';position:absolute;width:16px;height:16px;
+      border-color:var(--ardoise);border-style:solid;z-index:2;
+    }
+    .voyage-card::before{top:8px;left:8px;border-width:1.5px 0 0 1.5px;opacity:.4}
+    .voyage-card::after{bottom:8px;right:8px;border-width:0 1.5px 1.5px 0;opacity:.4}
+
+    .voyage-card__img{height:220px;position:relative;overflow:hidden}
+    .voyage-card__img svg{width:100%;height:100%}
+    .voyage-card__stamp{
+      position:absolute;top:12px;right:12px;
+      border:2px solid var(--ardoise-light);border-radius:2px;
+      padding:.3rem .65rem;
+      font-family:'Oswald',sans-serif;font-size:.62rem;font-weight:600;
+      letter-spacing:.2em;text-transform:uppercase;
+      color:var(--blanc-use);background:rgba(74,107,138,.7);
+      backdrop-filter:blur(4px);
+    }
+    .voyage-card__body{padding:1.3rem 1.5rem 1.5rem}
+    .voyage-card__meta{
+      font-family:'Oswald',sans-serif;font-size:.65rem;font-weight:400;
+      letter-spacing:.25em;text-transform:uppercase;color:var(--ardoise);
+      margin-bottom:.4rem;
+    }
+    .voyage-card__title{
+      font-family:'Lora',serif;font-size:1.4rem;font-weight:600;
+      color:var(--ardoise-dark);margin-bottom:.5rem;
+    }
+    .voyage-card__desc{font-size:.83rem;line-height:1.7;color:var(--brun-light)}
+    .voyage-card__cta{
+      display:inline-flex;align-items:center;gap:.4rem;margin-top:1rem;
+      font-family:'Oswald',sans-serif;font-size:.68rem;font-weight:600;
+      letter-spacing:.2em;text-transform:uppercase;color:var(--ardoise-dark);
+      text-decoration:none;border-bottom:1px solid var(--ardoise-pale);
+      padding-bottom:1px;transition:border-color .2s;
+    }
+    .voyage-card:hover .voyage-card__cta{border-color:var(--ardoise)}
+
+    /* CARTE MONDE */
+    .map-section{background:var(--ardoise-dark);padding:5rem 2rem;text-align:center}
+    .map-section .section-eyebrow{color:var(--ardoise-pale);justify-content:center}
+    .map-section .section-eyebrow::before,.map-section .section-eyebrow::after{background:var(--ardoise-pale)}
+    .map-section .section-title{color:var(--blanc-use)}
+    .world-map{max-width:860px;margin:2rem auto 0;border-radius:4px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.08)}
+    .world-map svg{width:100%;height:auto;display:block}
+
+    /* FOOTER */
+    footer{
+      background:var(--brun);padding:3rem 2rem;text-align:center;
+    }
+    .footer-hex{
+      width:56px;height:56px;margin:0 auto 1rem;
+      clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+      background:var(--ardoise);
+      display:flex;align-items:center;justify-content:center;
+    }
+    .footer-hex span{font-family:'Oswald',sans-serif;font-size:.7rem;font-weight:700;color:#fff;letter-spacing:.05em;text-align:center;line-height:1.2}
+    footer p{color:rgba(255,255,255,.3);font-size:.75rem;letter-spacing:.1em}
+    footer span{color:var(--ardoise-pale)}
+    footer a{color:rgba(255,255,255,.4);text-decoration:none;transition:color .2s}
+    footer a:hover{color:var(--ardoise-pale)}
+    footer .footer-links{margin-top:.8rem;display:flex;gap:1.5rem;justify-content:center}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="nav-hex"><span>86</span></div>
+    <span class="nav-brand">The 86 Team</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Accueil</a></li>
+    <li><a href="toronto-2026.html">Toronto 2026</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-pattern"></div>
+  <svg class="hero-rings" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="350" cy="350" r="200" stroke-width="1"/>
+    <circle cx="350" cy="350" r="280" stroke-width="1"/>
+    <circle cx="350" cy="350" r="340" stroke-width="1"/>
+  </svg>
+
+  <!-- Badge hexagonal SVG principal -->
+  <div class="hero-badge">
+    <svg viewBox="0 0 300 340" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="distress">
+          <feTurbulence type="fractalNoise" baseFrequency="0.065" numOctaves="3" result="noise"/>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+      </defs>
+      <!-- Ombre -->
+      <polygon points="150,12 278,82 278,258 150,328 22,258 22,82" fill="rgba(0,0,0,.3)" transform="translate(4,6)"/>
+      <!-- Hexagone principal -->
+      <polygon points="150,10 278,80 278,256 150,326 22,256 22,80" fill="#6B8FB5"/>
+      <!-- Bordure extérieure -->
+      <polygon points="150,10 278,80 278,256 150,326 22,256 22,80" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="3"/>
+      <!-- Bordure intérieure -->
+      <polygon points="150,28 262,94 262,242 150,308 38,242 38,94" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"/>
+      <!-- Ligne de séparation -->
+      <line x1="55" y1="168" x2="245" y2="168" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+      <!-- THE -->
+      <text x="150" y="135" text-anchor="middle" font-family="Oswald,sans-serif" font-size="72" font-weight="700" fill="white" opacity=".9" filter="url(#distress)" letter-spacing="8">THE</text>
+      <!-- 86 TEAM -->
+      <text x="150" y="210" text-anchor="middle" font-family="Oswald,sans-serif" font-size="34" font-weight="400" fill="white" opacity=".8" letter-spacing="10">86 TEAM</text>
+      <!-- Étoiles décoratives -->
+      <text x="68" y="178" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.4)">★</text>
+      <text x="232" y="178" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.4)">★</text>
+    </svg>
+  </div>
+
+  <p class="hero-tagline">
+    « Les meilleures aventures commencent toujours par<br>
+    un billet d'avion et une <em>bonne complice</em>. »
+  </p>
+
+  <div class="hero-cta">
+    <a href="toronto-2026.html" class="btn btn-primary">✈ Toronto 2026</a>
+    <a href="#voyages" class="btn btn-outline">Nos voyages</a>
+  </div>
+
+  <div class="hero-scroll"><div class="scroll-line"></div>Défiler</div>
+</header>
+
+<!-- SÉPARATEUR -->
+<div class="vintage-divider">
+  <svg viewBox="0 0 400 30" xmlns="http://www.w3.org/2000/svg">
+    <line x1="0" y1="15" x2="155" y2="15" stroke="#6B8FB5" stroke-width="1"/>
+    <polygon points="180,5 210,15 180,25 170,15" fill="none" stroke="#6B8FB5" stroke-width="1"/>
+    <text x="200" y="19" text-anchor="middle" font-family="Oswald" font-size="11" fill="#6B8FB5" letter-spacing="4">★</text>
+    <polygon points="220,5 210,15 220,25 230,15" fill="none" stroke="#6B8FB5" stroke-width="1"/>
+    <line x1="245" y1="15" x2="400" y2="15" stroke="#6B8FB5" stroke-width="1"/>
+  </svg>
+</div>
+
+<!-- CITATION -->
+<section class="quote-section">
+  <div class="quote-badges">
+    <div class="q-line"></div>
+    <div class="q-badge"></div>
+    <div class="q-line"></div>
+  </div>
+  <p class="quote-text">
+    « On ne revient jamais tout à fait les mêmes d'un voyage —<br>
+    on revient avec des <em>histoires</em> plein les poches<br>et des étoiles plein les yeux. »
+  </p>
+  <p class="quote-author">— The 86 Team</p>
+</section>
+
+<!-- VOYAGES -->
+<section class="voyages-section" id="voyages">
+  <p class="section-eyebrow">Nos aventures</p>
+  <h2 class="section-title">Les voyages<br>de la team</h2>
+
+  <div class="voyages-grid">
+
+    <!-- Toronto 2026 -->
+    <a href="toronto-2026.html" class="voyage-card">
+      <div class="voyage-card__img">
+        <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="220" fill="#4A6B8A"/>
+          <!-- Ciel dégradé -->
+          <rect width="400" height="140" fill="#3A5A78"/>
+          <!-- Nuages -->
+          <ellipse cx="80" cy="45" rx="50" ry="18" fill="rgba(255,255,255,.08)"/>
+          <ellipse cx="300" cy="30" rx="65" ry="20" fill="rgba(255,255,255,.06)"/>
+          <!-- Skyline silhouette -->
+          <rect x="0"   y="120" width="40"  height="100" fill="#2A3D50"/>
+          <rect x="45"  y="105" width="35"  height="115" fill="#2E4257"/>
+          <rect x="85"  y="90"  width="30"  height="130" fill="#2A3D50"/>
+          <rect x="120" y="110" width="40"  height="110" fill="#2E4257"/>
+          <rect x="165" y="78"  width="28"  height="142" fill="#2A3D50"/>
+          <rect x="198" y="100" width="35"  height="120" fill="#2E4257"/>
+          <rect x="238" y="88"  width="45"  height="132" fill="#2A3D50"/>
+          <rect x="288" y="108" width="35"  height="112" fill="#2E4257"/>
+          <rect x="328" y="95"  width="40"  height="125" fill="#2A3D50"/>
+          <rect x="373" y="112" width="27"  height="108" fill="#2E4257"/>
+          <!-- CN Tower -->
+          <rect x="178" y="18"  width="4"   height="65"  fill="#8AAFD0" opacity=".9"/>
+          <circle cx="180" cy="38" r="10" fill="#8AAFD0" opacity=".85"/>
+          <!-- Fenêtres -->
+          <rect x="52" y="118" width="5" height="4" fill="rgba(255,255,255,.35)"/>
+          <rect x="62" y="118" width="5" height="4" fill="rgba(255,255,255,.25)"/>
+          <rect x="128" y="122" width="6" height="4" fill="rgba(255,255,255,.3)"/>
+          <rect x="205" y="112" width="6" height="4" fill="rgba(255,255,255,.35)"/>
+          <rect x="245" y="100" width="7" height="4" fill="rgba(255,255,255,.3)"/>
+          <rect x="257" y="100" width="7" height="4" fill="rgba(255,255,255,.2)"/>
+          <!-- Lac -->
+          <rect x="0" y="195" width="400" height="25" fill="#3A5A78" opacity=".6"/>
+          <rect x="175" y="195" width="2"  height="18" fill="rgba(255,255,255,.2)"/>
+        </svg>
+        <span class="voyage-card__stamp">Août 2026</span>
+      </div>
+      <div class="voyage-card__body">
+        <p class="voyage-card__meta">19 – 26 Août 2026 · Canada</p>
+        <h3 class="voyage-card__title">Toronto</h3>
+        <p class="voyage-card__desc">8 jours dans la métropole canadienne — Tour CN, Niagara Falls, quartiers bohèmes et concerts au bord du lac Ontario.</p>
+        <span class="voyage-card__cta">
+          Voir l'itinéraire
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H7M17 7v10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <!-- Destination mystère -->
+    <div class="voyage-card" style="cursor:default;">
+      <div class="voyage-card__img">
+        <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="220" fill="#5A7A96"/>
+          <!-- Motif hexagones -->
+          <polygon points="200,60 230,78 230,114 200,132 170,114 170,78" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"/>
+          <polygon points="200,40 248,68 248,124 200,152 152,124 152,68" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="1.5"/>
+          <polygon points="200,18 268,58 268,138 200,178 132,138 132,58" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="1.5"/>
+          <text x="200" y="105" text-anchor="middle" font-family="Oswald" font-size="40" fill="rgba(255,255,255,.2)" letter-spacing="3">?</text>
+          <text x="200" y="165" text-anchor="middle" font-family="Oswald" font-size="12" fill="rgba(255,255,255,.3)" letter-spacing="5">BIENTÔT</text>
+        </svg>
+        <span class="voyage-card__stamp" style="background:rgba(255,255,255,.15);">À venir</span>
+      </div>
+      <div class="voyage-card__body">
+        <p class="voyage-card__meta">??? · Quelque part dans le monde</p>
+        <h3 class="voyage-card__title">Destination mystère</h3>
+        <p class="voyage-card__desc">La prochaine aventure se prépare... Restez connectées pour découvrir où la 86 Team posera ses valises !</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CARTE MONDE -->
+<section class="map-section" id="carte">
+  <p class="section-eyebrow">Notre carte du monde</p>
+  <h2 class="section-title">Les destinations</h2>
+  <p style="color:rgba(255,255,255,.45);font-size:.88rem;letter-spacing:.08em;margin-top:.3rem;">Chaque épingle, une histoire.</p>
+
+  <div class="world-map">
+    <svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" style="background:#2E4257;">
+      <!-- Grille légère -->
+      <line x1="0" y1="250" x2="1000" y2="250" stroke="rgba(255,255,255,.04)" stroke-width="1"/>
+      <line x1="500" y1="0" x2="500" y2="500" stroke="rgba(255,255,255,.04)" stroke-width="1"/>
+      <!-- Continents -->
+      <path d="M120,80 L200,70 L240,90 L260,130 L250,180 L220,200 L200,240 L170,260 L140,240 L110,200 L90,160 L100,120Z" fill="#3A5A78" stroke="#4A7A9B" stroke-width="1"/>
+      <path d="M180,260 L210,265 L220,300 L210,360 L190,400 L170,410 L155,380 L150,330 L160,290Z" fill="#3A5A78" stroke="#4A7A9B" stroke-width="1"/>
+      <path d="M430,75 L485,70 L505,88 L512,112 L492,132 L468,142 L443,128 L428,108Z" fill="#3A5A78" stroke="#4A7A9B" stroke-width="1"/>
+      <path d="M438,148 L492,143 L512,168 L517,228 L502,288 L480,318 L453,308 L433,278 L422,218 L428,168Z" fill="#3A5A78" stroke="#4A7A9B" stroke-width="1"/>
+      <path d="M508,58 L652,53 L722,78 L742,118 L722,158 L682,168 L622,158 L568,138 L528,118 L508,98Z" fill="#3A5A78" stroke="#4A7A9B" stroke-width="1"/>
+      <path d="M588,163 L620,163 L632,198 L617,228 L600,213 L583,193Z" fill="#3A5A78" stroke="#4A7A9B" stroke-width="1"/>
+      <path d="M698,278 L780,268 L812,298 L802,348 L762,368 L720,353 L693,318Z" fill="#3A5A78" stroke="#4A7A9B" stroke-width="1"/>
+      <path d="M488,38 L722,33 L762,58 L742,83 L652,78 L538,73 L488,58Z" fill="#3A5A78" stroke="#4A7A9B" stroke-width="1"/>
+      <!-- Paris -->
+      <circle cx="463" cy="103" r="5" fill="#B8CCE0"/>
+      <circle cx="463" cy="103" r="11" fill="rgba(184,204,224,.2)"/>
+      <text x="463" y="93" text-anchor="middle" font-family="Oswald" font-size="11" fill="#B8CCE0" letter-spacing="1">PARIS</text>
+      <!-- Toronto avec hexagone -->
+      <polygon points="194,125 208,133 208,149 194,157 180,149 180,133" fill="#6B8FB5" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>
+      <circle cx="194" cy="141" r="22" fill="rgba(107,143,181,.2)"/>
+      <circle cx="194" cy="141" r="32" fill="rgba(107,143,181,.08)"/>
+      <text x="194" y="120" text-anchor="middle" font-family="Oswald" font-size="11" fill="#D0DCE8" letter-spacing="1">TORONTO</text>
+      <text x="194" y="108" text-anchor="middle" font-family="Oswald" font-size="10" fill="rgba(208,220,232,.5)" letter-spacing="2">2026 ✈</text>
+      <!-- Ligne de vol -->
+      <path d="M463,103 Q328,52 194,141" stroke="rgba(184,204,224,.4)" stroke-width="1.5" fill="none" stroke-dasharray="7,5"/>
+      <text x="328" y="68" text-anchor="middle" font-size="13" fill="rgba(184,204,224,.6)" transform="rotate(-18,328,68)">✈</text>
+    </svg>
+  </div>
+  <p style="margin-top:1.2rem;font-size:.72rem;color:rgba(255,255,255,.3);letter-spacing:.15em;font-family:'Oswald',sans-serif;">
+    ◆ TORONTO 2026 &nbsp;·&nbsp; ◆ PARIS (BASE)
+  </p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-hex"><span>THE<br>86</span></div>
+  <p>Fait avec ♥ et beaucoup de <span>wanderlust</span></p>
+  <div class="footer-links">
+    <a href="index.html">Accueil</a>
+    <a href="toronto-2026.html">Toronto 2026</a>
+  </div>
+</footer>
+
+</body>
+</html>
